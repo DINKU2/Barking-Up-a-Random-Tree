@@ -49,7 +49,7 @@ namespace ompl
             checkValidity();
             
             // Get start and goal states
-            base::State *startState = pis_.nextStart();
+            const base::State *startState = pis_.nextStart();
             if (!startState) {
                 return base::PlannerStatus::INVALID_START;
             }
@@ -75,7 +75,7 @@ namespace ompl
                 if (gsr && rng_.uniform01() < goalBias_) {
                     gsr->sampleGoal(randomState);
                 } else {
-                    si_->sampleUniform(randomState);
+                    si_->allocStateSampler()->sampleUniform(randomState);
                 }
                 
                 // RTP Step 3: Try straight-line edge qa -> qb
@@ -160,8 +160,15 @@ namespace ompl
                 return root_;
             }
             
-            std::uniform_int_distribution<size_t> uid(0, nodes.size() - 1);
-            return nodes[uid(rng_)];
+            if (nodes.size() == 1) {
+                return nodes[0];
+            }
+            
+            // Use a simple modulo approach for random selection
+            static unsigned int seed = 0;
+            seed = (seed * 1103515245 + 12345) & 0x7fffffff;
+            size_t index = seed % nodes.size();
+            return nodes[index];
         }
 
         void RTP::addNode(Node *parent, Node *child)
