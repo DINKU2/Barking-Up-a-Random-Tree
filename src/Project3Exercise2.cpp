@@ -120,18 +120,18 @@ void planBox(const std::vector<Rectangle> &obstacles)
     // Create the state space for a rotating square robot (SE2: x, y, theta)
     auto space = std::make_shared<ompl::base::SE2StateSpace>();
     
-    // Set bounds for the workspace
-    ompl::base::RealVectorBounds bounds(2);
-    bounds.setLow(-10.0);  // Lower bound for x and y
-    bounds.setHigh(10.0);  // Upper bound for x and y
-    space->setBounds(bounds);
+        // Set bounds for the workspace
+        ompl::base::RealVectorBounds bounds(2);
+        bounds.setLow(-7.0);  // Lower bound for x and y
+        bounds.setHigh(7.0);  // Upper bound for x and y
+        space->setBounds(bounds);
     
     // Create space information
     auto si = std::make_shared<ompl::base::SpaceInformation>(space);
     
-    // Set state validity checker for square robot
-    // Using a very small square robot for easier navigation
-    double sideLength = 0.1;
+        // Set state validity checker for square robot
+        // Using a larger square robot for better visualization and demonstration
+        double sideLength = 0.5;
     si->setStateValidityChecker([&obstacles, sideLength](const ompl::base::State *state) {
         return isValidStateSquare(state, sideLength, obstacles);
     });
@@ -139,18 +139,18 @@ void planBox(const std::vector<Rectangle> &obstacles)
     // Create problem definition
     auto pdef = std::make_shared<ompl::base::ProblemDefinition>(si);
     
-    // Set start state (closer to goal for easier solution)
-    ompl::base::ScopedState<> start(space);
-    start->as<ompl::base::SE2StateSpace::StateType>()->setX(-2.0);
-    start->as<ompl::base::SE2StateSpace::StateType>()->setY(-2.0);
-    start->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Start with no rotation
-    pdef->addStartState(start);
-    
-    // Set goal state (closer to start for easier solution)
-    ompl::base::ScopedState<> goal(space);
-    goal->as<ompl::base::SE2StateSpace::StateType>()->setX(2.0);
-    goal->as<ompl::base::SE2StateSpace::StateType>()->setY(2.0);
-    goal->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Goal with no rotation
+        // Set start state (bottom left area)
+        ompl::base::ScopedState<> start(space);
+        start->as<ompl::base::SE2StateSpace::StateType>()->setX(-3.5);
+        start->as<ompl::base::SE2StateSpace::StateType>()->setY(-3.5);
+        start->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Start with no rotation
+        pdef->addStartState(start);
+
+        // Set goal state (top right area)
+        ompl::base::ScopedState<> goal(space);
+        goal->as<ompl::base::SE2StateSpace::StateType>()->setX(3.5);
+        goal->as<ompl::base::SE2StateSpace::StateType>()->setY(3.5);
+        goal->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Goal with no rotation
     pdef->setGoalState(goal);
     
     // Create and configure RTP planner
@@ -162,9 +162,9 @@ void planBox(const std::vector<Rectangle> &obstacles)
     
     // Attempt to solve the problem
     std::cout << "Attempting to find a path..." << std::endl;
-    std::cout << "Start: (-2, -2, 0°), Goal: (2, 2, 0°)" << std::endl;
+        std::cout << "Start: (-3.5, -3.5, 0°), Goal: (3.5, 3.5, 0°)" << std::endl;
     std::cout << "Robot: Square with side length " << sideLength << std::endl;
-    ompl::base::PlannerStatus solved = planner->solve(ompl::base::timedPlannerTerminationCondition(15.0));  // 15 second timeout
+        ompl::base::PlannerStatus solved = planner->solve(ompl::base::timedPlannerTerminationCondition(120.0));  // 2 minute timeout
     
     if (solved)
     {
@@ -220,14 +220,26 @@ void makeEnvironment1(std::vector<Rectangle> &obstacles)
 
 void makeEnvironment2(std::vector<Rectangle> &obstacles)
 {
-    std::cout << "Creating Environment 2: Simple obstacles for box robot" << std::endl;
+    std::cout << "Creating Environment 2: Complex obstacles for box robot" << std::endl;
     
     // Clear any existing obstacles
     obstacles.clear();
     
-    // Create a simple environment with one obstacle
-    // This should be manageable for the small box robot
-    obstacles.push_back({-0.5, -0.5, 1.0, 1.0});  // Small obstacle in center
+    // Create a challenging but solvable environment with multiple obstacles
+    // Strategically placed obstacles to create interesting navigation challenges
+    
+    // Main corridor obstacles - create a winding path
+    obstacles.push_back({-0.5, -0.5, 1.0, 1.0});   // Center obstacle
+    obstacles.push_back({-1.0, 1.5, 0.8, 0.8});    // Top left
+    obstacles.push_back({1.5, -1.0, 0.8, 0.8});    // Bottom right
+    obstacles.push_back({-1.5, -1.5, 0.6, 0.8});   // Bottom left
+    obstacles.push_back({1.0, 1.0, 0.6, 0.8});     // Top right
+    
+    // Additional scattered obstacles
+    obstacles.push_back({-2.0, 2.5, 0.6, 0.6});    // Far top left
+    obstacles.push_back({0.0, 2.0, 0.6, 0.6});     // Top center
+    obstacles.push_back({-2.5, -0.5, 0.6, 0.6});   // Left side
+    obstacles.push_back({2.0, -2.0, 0.6, 0.6});    // Far bottom right
     
     std::cout << "Environment 2 created with " << obstacles.size() << " obstacles" << std::endl;
 }
