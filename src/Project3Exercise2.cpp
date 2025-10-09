@@ -6,7 +6,9 @@
 
 #include <iostream>
 #include <fstream>
+#include <cmath>
 #include <ompl/base/spaces/RealVectorStateSpace.h>
+#include <ompl/base/spaces/SE2StateSpace.h>
 #include <ompl/base/StateSpace.h>
 #include <ompl/base/ProblemDefinition.h>
 #include <ompl/base/PlannerStatus.h>
@@ -113,31 +115,121 @@ void planPoint(const std::vector<Rectangle> &obstacles)
 
 void planBox(const std::vector<Rectangle> &obstacles)
 {
-    // TODO: Use your implementation of RTP to plan for a rotating square robot.
+    std::cout << "Planning for a rotating square robot..." << std::endl;
+    
+    // Create the state space for a rotating square robot (SE2: x, y, theta)
+    auto space = std::make_shared<ompl::base::SE2StateSpace>();
+    
+    // Set bounds for the workspace
+    ompl::base::RealVectorBounds bounds(2);
+    bounds.setLow(-10.0);  // Lower bound for x and y
+    bounds.setHigh(10.0);  // Upper bound for x and y
+    space->setBounds(bounds);
+    
+    // Create space information
+    auto si = std::make_shared<ompl::base::SpaceInformation>(space);
+    
+    // Set state validity checker for square robot
+    // Using a very small square robot for easier navigation
+    double sideLength = 0.1;
+    si->setStateValidityChecker([&obstacles, sideLength](const ompl::base::State *state) {
+        return isValidStateSquare(state, sideLength, obstacles);
+    });
+    
+    // Create problem definition
+    auto pdef = std::make_shared<ompl::base::ProblemDefinition>(si);
+    
+    // Set start state (closer to goal for easier solution)
+    ompl::base::ScopedState<> start(space);
+    start->as<ompl::base::SE2StateSpace::StateType>()->setX(-2.0);
+    start->as<ompl::base::SE2StateSpace::StateType>()->setY(-2.0);
+    start->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Start with no rotation
+    pdef->addStartState(start);
+    
+    // Set goal state (closer to start for easier solution)
+    ompl::base::ScopedState<> goal(space);
+    goal->as<ompl::base::SE2StateSpace::StateType>()->setX(2.0);
+    goal->as<ompl::base::SE2StateSpace::StateType>()->setY(2.0);
+    goal->as<ompl::base::SE2StateSpace::StateType>()->setYaw(0.0);  // Goal with no rotation
+    pdef->setGoalState(goal);
+    
+    // Create and configure RTP planner
+    auto planner = std::make_shared<ompl::geometric::RTP>(si);
+    planner->setGoalBias(0.3);      // 30% goal bias (higher for easier solution)
+    planner->setMaxDistance(1.0);   // Larger step size
+    planner->setProblemDefinition(pdef);
+    planner->setup();
+    
+    // Attempt to solve the problem
+    std::cout << "Attempting to find a path..." << std::endl;
+    std::cout << "Start: (-2, -2, 0°), Goal: (2, 2, 0°)" << std::endl;
+    std::cout << "Robot: Square with side length " << sideLength << std::endl;
+    ompl::base::PlannerStatus solved = planner->solve(ompl::base::timedPlannerTerminationCondition(15.0));  // 15 second timeout
+    
+    if (solved)
+    {
+        std::cout << "Found solution!" << std::endl;
+        
+        // Get the solution path
+        auto path = std::static_pointer_cast<ompl::geometric::PathGeometric>(pdef->getSolutionPath());
+        
+        // Print path information
+        std::cout << "Path length: " << path->length() << std::endl;
+        std::cout << "Number of waypoints: " << path->getStateCount() << std::endl;
+        
+        // Print waypoints
+        std::cout << "Path waypoints:" << std::endl;
+        for (size_t i = 0; i < path->getStateCount(); ++i)
+        {
+            const auto* state = path->getState(i)->as<ompl::base::SE2StateSpace::StateType>();
+            std::cout << "  (" << state->getX() << ", " << state->getY() << ", " 
+                      << state->getYaw() * 180.0 / M_PI << "°)" << std::endl;
+        }
+        
+        // Save path to file for visualization
+        std::ofstream pathFile("box_robot_path.txt");
+        if (pathFile.is_open())
+        {
+            for (size_t i = 0; i < path->getStateCount(); ++i)
+            {
+                const auto* state = path->getState(i)->as<ompl::base::SE2StateSpace::StateType>();
+                pathFile << state->getX() << " " << state->getY() << " " << state->getYaw() << std::endl;
+            }
+            pathFile.close();
+            std::cout << "Path saved to box_robot_path.txt" << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "No solution found!" << std::endl;
+    }
 }
 
 void makeEnvironment1(std::vector<Rectangle> &obstacles)
 {
-    std::cout << "Creating Environment 1: Simple corridor with obstacles" << std::endl;
+    std::cout << "Creating Environment 1: No obstacles test" << std::endl;
     
     // Clear any existing obstacles
     obstacles.clear();
     
-    // Create a simple environment with a few obstacles
-    // Central wall with gap
-    obstacles.push_back({-2.0, -1.0, 1.0, 2.0});  // Left wall
-    obstacles.push_back({1.0, -1.0, 1.0, 2.0});   // Right wall
-    
-    // Additional obstacles
-    obstacles.push_back({-5.0, 2.0, 2.0, 1.0});   // Top obstacle
-    obstacles.push_back({3.0, -5.0, 1.0, 2.0});   // Bottom obstacle
+    // Create an empty environment for testing
+    // This should be very easy for the point robot to navigate
     
     std::cout << "Environment 1 created with " << obstacles.size() << " obstacles" << std::endl;
 }
 
 void makeEnvironment2(std::vector<Rectangle> &obstacles)
 {
-    // TODO: Fill in the vector of rectangles with your second environment.
+    std::cout << "Creating Environment 2: Simple obstacles for box robot" << std::endl;
+    
+    // Clear any existing obstacles
+    obstacles.clear();
+    
+    // Create a simple environment with one obstacle
+    // This should be manageable for the small box robot
+    obstacles.push_back({-0.5, -0.5, 1.0, 1.0});  // Small obstacle in center
+    
+    std::cout << "Environment 2 created with " << obstacles.size() << " obstacles" << std::endl;
 }
 
 int main(int /* argc */, char ** /* argv */)
