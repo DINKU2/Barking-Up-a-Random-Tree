@@ -1,7 +1,7 @@
 ///////////////////////////////////////
 // COMP/ELEC/MECH 450/550
 // Project 3
-// Authors: FILL ME OUT!!
+// Authors: Dinuk & Zarek!!
 //////////////////////////////////////
 
 #include <iostream>
