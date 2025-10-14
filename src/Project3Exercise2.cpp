@@ -73,7 +73,7 @@ void planPoint(const std::vector<Rectangle> &obstacles)
     // Attempt to solve the problem
     std::cout << "Attempting to find a path..." << std::endl;
     std::cout << "Start: (-5, -5), Goal: (5, 5)" << std::endl;
-    ompl::base::PlannerStatus solved = planner->solve(ompl::base::timedPlannerTerminationCondition(5.0));  // 5 second timeout
+    ompl::base::PlannerStatus solved = planner->solve(ompl::base::timedPlannerTerminationCondition(15.0));  // 5 second timeout
     
     if (solved)
     {
@@ -244,6 +244,27 @@ void makeEnvironment2(std::vector<Rectangle> &obstacles)
     std::cout << "Environment 2 created with " << obstacles.size() << " obstacles" << std::endl;
 }
 
+void makeEnvironment3(std::vector<Rectangle> &obstacles)
+{
+    std::cout << "Creating Environment 3: Scattered obstacles for point or box robot" << std::endl;
+
+    obstacles.clear();
+
+    obstacles.push_back({-4.0,  3.0, 0.8, 0.8});
+    obstacles.push_back({-2.5,  1.0, 1.0, 0.6});
+    obstacles.push_back({-3.5, -2.0, 0.7, 0.7});
+    obstacles.push_back({-1.0, -3.5, 0.8, 0.8});
+    obstacles.push_back({ 0.5,  2.5, 0.9, 0.7});
+    obstacles.push_back({ 1.5, -1.5, 0.8, 0.8});
+    obstacles.push_back({ 3.0,  0.5, 0.7, 0.7});
+    obstacles.push_back({ 2.5, -3.0, 0.9, 0.6});
+    obstacles.push_back({ 4.0,  2.0, 0.8, 0.8});
+    obstacles.push_back({ 0.0,  0.0, 0.6, 0.6});
+
+    std::cout << "Environment 3 created with " << obstacles.size()
+              << " scattered obstacles" << std::endl;
+}
+
 int main(int /* argc */, char ** /* argv */)
 {
     int robot, choice;
@@ -268,7 +289,7 @@ int main(int /* argc */, char ** /* argv */)
     {
         std::cout << "In Environment: " << std::endl;
         std::cout << " (1) Simple corridor with obstacles" << std::endl;
-        std::cout << " (2) TODO" << std::endl;
+        std::cout << " (2) Complex environment" << std::endl;
         std::cout << "Enter choice (1 or 2): ";
         std::cout.flush();
 
@@ -285,7 +306,7 @@ int main(int /* argc */, char ** /* argv */)
             makeEnvironment1(obstacles);
             break;
         case 2:
-            makeEnvironment2(obstacles);
+            makeEnvironment3(obstacles);
             break;
         default:
             std::cerr << "Invalid Environment Number!" << std::endl;

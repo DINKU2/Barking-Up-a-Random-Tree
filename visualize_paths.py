@@ -14,23 +14,43 @@ def read_obstacles_from_code():
     obstacles = []
     
     # Environment 2 obstacles (from makeEnvironment2)
-    obstacles.append({
-        'name': 'Environment 2 - Complex obstacles for box robot',
+    obstacles.append(
+        {
+        'name': 'Environment 3 - Scattered obstacles for point or box robot',
         'rectangles': [
-            (-0.5, -0.5, 1.0, 1.0),   # Center obstacle
-            (-1.0, 1.5, 0.8, 0.8),    # Top left
-            (1.5, -1.0, 0.8, 0.8),    # Bottom right
-            (-1.5, -1.5, 0.6, 0.8),   # Bottom left
-            (1.0, 1.0, 0.6, 0.8),     # Top right
-            (-2.0, 2.5, 0.6, 0.6),    # Far top left
-            (0.0, 2.0, 0.6, 0.6),     # Top center
-            (-2.5, -0.5, 0.6, 0.6),   # Left side
-            (2.0, -2.0, 0.6, 0.6)     # Far bottom right
+            (-4.0,  3.0, 0.8, 0.8),   # Top left cluster
+            (-2.5,  1.0, 1.0, 0.6),   # Upper mid-left
+            (-3.5, -2.0, 0.7, 0.7),   # Lower left
+            (-1.0, -3.5, 0.8, 0.8),   # Bottom left
+            ( 0.5,  2.5, 0.9, 0.7),   # Upper mid
+            ( 1.5, -1.5, 0.8, 0.8),   # Mid lower
+            ( 3.0,  0.5, 0.7, 0.7),   # Mid right
+            ( 2.5, -3.0, 0.9, 0.6),   # Bottom right
+            ( 4.0,  2.0, 0.8, 0.8),   # Upper right
+            ( 0.0,  0.0, 0.6, 0.6)    # Center obstacle
         ],
-        'start': (-3.5, -3.5, 0.0),  # x, y, theta - bottom left
-        'goal': (3.5, 3.5, 0.0),     # x, y, theta - top right
-        'robot_size': 0.5  # Larger robot for better visualization
-    })
+        'start': (-3.5, -3.5, 0.0),  # Start position (bottom-left corner)
+        'goal': (3.5, 3.5, 0.0),     # Goal position (top-right corner)
+        'robot_size': 0.5            # Medium-size robot for visibility
+    }
+    #     {
+    #     'name': 'Environment 2 - Complex obstacles for box robot',
+    #     'rectangles': [
+    #         (-0.5, -0.5, 1.0, 1.0),   # Center obstacle
+    #         (-1.0, 1.5, 0.8, 0.8),    # Top left
+    #         (1.5, -1.0, 0.8, 0.8),    # Bottom right
+    #         (-1.5, -1.5, 0.6, 0.8),   # Bottom left
+    #         (1.0, 1.0, 0.6, 0.8),     # Top right
+    #         (-2.0, 2.5, 0.6, 0.6),    # Far top left
+    #         (0.0, 2.0, 0.6, 0.6),     # Top center
+    #         (-2.5, -0.5, 0.6, 0.6),   # Left side
+    #         (2.0, -2.0, 0.6, 0.6)     # Far bottom right
+    #     ],
+    #     'start': (-3.5, -3.5, 0.0),  # x, y, theta - bottom left
+    #     'goal': (3.5, 3.5, 0.0),     # x, y, theta - top right
+    #     'robot_size': 0.5  # Larger robot for better visualization
+    # }
+    )
     
     return obstacles
 
