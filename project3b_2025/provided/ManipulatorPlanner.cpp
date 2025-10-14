@@ -134,11 +134,11 @@ void ManipulatorPlanner::configToState(ob::State* state, const std::vector<doubl
     }
 }
 
-void ManipulatorPlanner::setRTPParameters(double goal_bias, double maxDistance) {
+void ManipulatorPlanner::setRTPParameters(double goal_bias) {
     if (current_planner_) {
         if (auto rtp = std::dynamic_pointer_cast<ompl::geometric::RTP>(current_planner_)) {
             rtp->setGoalBias(goal_bias);
-            rtp->setMaxDistance(maxDistance);
+            //rtp->setMaxDistance(maxDistance);
         }
     }
     // STUDENT TODO START
