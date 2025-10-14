@@ -22,7 +22,11 @@ namespace ompl
         class RTP : public base::Planner
         {
         public:
+<<<<<<< HEAD
             RTP(const base::SpaceInformationPtr &si, double goal_bias = 0.05);
+=======
+            RTP(const base::SpaceInformationPtr &si);
+>>>>>>> 612dcad61cbfbeccac12297cab3e21c746b7cb20
             virtual ~RTP();
 
             virtual void clear() override;

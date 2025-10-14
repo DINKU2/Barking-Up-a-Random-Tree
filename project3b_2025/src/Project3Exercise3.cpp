@@ -272,7 +272,11 @@ int main(int /* argc */, char** /* argv */) {
             // Parameters: planning_time, goal_bias
             // - planning_time: Maximum time allowed for planning (seconds)
             // - goal_bias: Probability [0,1] of sampling towards goal vs random sampling
+<<<<<<< HEAD
             PlannerConfig("RTP-1", "RTP", 15.0, 0.5),
+=======
+            PlannerConfig("RTP-1", "RTP", 5.0, 0.02),
+>>>>>>> 612dcad61cbfbeccac12297cab3e21c746b7cb20
             
             // ========== RRT (Rapidly-exploring Random Tree) ==========
             // Parameters: planning_time, goal_bias, range
@@ -287,14 +291,14 @@ int main(int /* argc */, char** /* argv */) {
             // - goal_bias: Not used in RRT-Connect (bidirectional growth handles goal bias)
             // - range: Maximum distance for extending trees (0.0 = auto-detect)
             // Note: RRT-Connect grows trees from both start and goal simultaneously
-            //PlannerConfig("RRT-Connect-1", "RRT-Connect", 5.0, 0.05, 0.3),
+            PlannerConfig("RRT-Connect-1", "RRT-Connect", 5.0, 0.05, 0.3),
             
             // ========== PRM (Probabilistic Roadmap) ==========
             // Parameters: planning_time, goal_bias (unused), range (unused), max_neighbors
             // - planning_time: Time for roadmap construction + query phase (seconds)
             // - max_neighbors: Maximum number of nearest neighbors to connect to each milestone
             // Note: PRM builds a roadmap of valid configurations, then searches for path
-            //PlannerConfig("PRM-1", "PRM", 5.0, 0.0, 0.0, 5),
+            PlannerConfig("PRM-1", "PRM", 5.0, 0.0, 0.0, 5),
             
         };
 
