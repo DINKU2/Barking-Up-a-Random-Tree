@@ -17,8 +17,8 @@ namespace ompl
 {
     namespace geometric
     {
-        RTP::RTP(const base::SpaceInformationPtr &si) 
-            : base::Planner(si, "RTP"), root_(nullptr), goalBias_(0.05), maxDistance_(0.1)
+        RTP::RTP(const base::SpaceInformationPtr &si, double goalBias, double maxDistance) 
+            : base::Planner(si, "RTP"), root_(nullptr), goalBias_(std::clamp(goalBias, 0.0, 1.0)), maxDistance_(std::clamp(maxDistance, 0.0, 1.0))
         {
             specs_.approximateSolutions = true;
             specs_.directed = true;
