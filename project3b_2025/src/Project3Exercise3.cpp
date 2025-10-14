@@ -272,7 +272,7 @@ int main(int /* argc */, char** /* argv */) {
             // Parameters: planning_time, goal_bias
             // - planning_time: Maximum time allowed for planning (seconds)
             // - goal_bias: Probability [0,1] of sampling towards goal vs random sampling
-            //PlannerConfig("RTP-1", "RTP", 5.0, 0.02),
+            PlannerConfig("RTP-1", "RTP", 15.0, 0.5),
             
             // ========== RRT (Rapidly-exploring Random Tree) ==========
             // Parameters: planning_time, goal_bias, range

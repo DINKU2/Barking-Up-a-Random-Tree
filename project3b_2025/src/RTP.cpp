@@ -17,8 +17,8 @@ namespace ompl
 {
     namespace geometric
     {
-        RTP::RTP(const base::SpaceInformationPtr &si) 
-            : base::Planner(si, "RTP"), root_(nullptr), goalBias_(0.05), maxDistance_(0.1)
+        RTP::RTP(const base::SpaceInformationPtr &si, double goal_bias) 
+            : base::Planner(si, "RTP"), root_(nullptr), goalBias_(goal_bias), maxDistance_(0.1)
         {
             specs_.approximateSolutions = true;
             specs_.directed = true;
@@ -105,6 +105,7 @@ namespace ompl
                         si_->freeState(randomState);
                         return base::PlannerStatus::EXACT_SOLUTION;
                     }
+                    // Note: qbTry is now owned by newNode, don't free it here
                 } else {
                     si_->freeState(qbTry);
                 }

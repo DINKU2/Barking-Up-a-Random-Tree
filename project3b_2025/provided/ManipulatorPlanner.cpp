@@ -136,7 +136,12 @@ void ManipulatorPlanner::configToState(ob::State* state, const std::vector<doubl
 
 void ManipulatorPlanner::setRTPParameters(double goal_bias) {
     // STUDENT TODO START
-    (void)goal_bias;
+    if (current_planner_) {
+        // Try to cast to RTP planner and set parameters
+        if (auto rtp = std::dynamic_pointer_cast<ompl::geometric::RTP>(current_planner_)) {
+            rtp->setGoalBias(goal_bias);
+        }
+    }
     // STUDENT TODO END
 }
 
